@@ -1,8 +1,8 @@
-#ferienschule
+# ferienschule
 
 
 
-#dev setup
+# dev setup
 
 ## ./db
   dolt sql-server -P 3333
