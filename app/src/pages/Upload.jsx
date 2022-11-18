@@ -15,7 +15,7 @@ export function Upload() {
         formData.append('File', selectedFile);
 
         fetch(
-            'https://freeimage.host/api/1/upload?key=<YOUR_API_KEY>',
+            'https://ferienschule.violass.club:444/Teilnehmer.php',
             {
                 method: 'POST',
                 body: formData,
