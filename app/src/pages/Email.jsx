@@ -36,8 +36,10 @@ export function Email() {
                 method: 'POST',
                 body: JSON.stringify(formValues)
             })
+            .then((data) => data.json())
             .then((data) => {
-                setURL(JSON.stringify(data))
+                console.log(data)
+                setURL(data)
             })
         };
           
@@ -50,7 +52,7 @@ export function Email() {
                             <h3>Email</h3>
                             <TextField name="email" inputProps={inputProps} onChange={handleChange} />
                             <Button type={'submit'} color={'primary'}>E-Mail versenden</Button>
-                            {url}
+                            {url.message}
                         </Stack>
                     </form>
                 </Container>

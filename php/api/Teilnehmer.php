@@ -1,5 +1,5 @@
 <?php 
-	include '../cors.php';
+	include '../default.php';
 
 	$conn = require '../db.php';
 

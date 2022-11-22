@@ -79,16 +79,16 @@ function SimpleDialog(props) {
 export function Anwesenheit() {
     const [teilnehmer, setTeilnehmer] = useState(null)
     const [open, setOpen] = React.useState(false);
-    const { key } = useParams()
+    const { token } = useParams()
 
     useEffect(() => {
-        fetch(`https://ferienschule.violass.club:444/api/Authorize.php?key=${key}`)
+        fetch(`https://ferienschule.violass.club:444/api/Authorize.php?key=${token}`)
         .then((data) => data.json())
         .then((json) => {
             console.log(json)
             setTeilnehmer(json[0])
         })
-    }, [setTeilnehmer,key])
+    }, [setTeilnehmer,token])
 
     if (!teilnehmer)
         return <div></div>
