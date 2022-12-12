@@ -8,11 +8,7 @@ export function Klassen() {
     const { id } = useParams()
 
     if (id !== undefined)
-        return <div className="container">
-                <KlassenView id={id} />
-            </div>
+        return <KlassenView id={id} />
 
-    return <div className="container">
-            <KlassenListView />
-        </div>
+    return <KlassenListView />
 }

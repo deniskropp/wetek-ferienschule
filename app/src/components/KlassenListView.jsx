@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import Container from '@mui/material/Container'
 import { DataGrid, GridCellModes } from '@mui/x-data-grid'
 
 
@@ -115,25 +116,30 @@ export function KlassenListView() {
   );
 
 
+  const [pageSize, setPageSize] = useState(5)
+
   const [Klassen, setKlassen] = useState(null)
 
   useEffect(() => {
     fetch(`https://ferienschule.violass.club:444/api/Klassen.php`)
-    .then((data) => data.json())
-    .then((json) => {
+      .then((data) => data.json())
+      .then((json) => {
         setKlassen(json)
-    })
+      })
   }, [setKlassen])
 
-  
   if (Klassen === null)
-    return <div></div>
+    return <Container>Lade...</Container>
 
-  
+
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <Container>
       <DataGrid
-        rowHeight={25}
+        autoHeight
+        rowHeight={38}
+        rowsPerPageOptions={[5,10,20,50]}
+        pageSize={pageSize}
+        onPageSizeChange={setPageSize}
         rows={Klassen}
         columns={columns}
         onCellKeyDown={handleCellKeyDown}
@@ -156,13 +162,13 @@ export function KlassenListView() {
         }}
         experimentalFeatures={{ newEditingApi: true }}
       />
-    </div>
-  );
+    </Container>
+  )
 }
 
 const columns = [
-  { field: 'Name', width: 250, editable: true },
-  { field: 'Schule', width: 250, editable: true },
+  { field: 'Name', width: 100, editable: true },
+  { field: 'Schule', width: 350, editable: true },
 ];
 
 

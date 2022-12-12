@@ -1,6 +1,5 @@
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import { useTheme } from '@mui/material/styles';
+import Stack from '@mui/material/Stack'
+import { useTheme } from '@mui/material/styles'
 
 export function Footer() {
     const theme = useTheme();

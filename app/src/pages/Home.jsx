@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import Button from '@mui/material/Button'
 import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
 
 import './Home.css'
 
 
 import axios from 'axios'
 
+/*
 const categories = [
     "animal",
     "career",
@@ -25,22 +28,22 @@ const categories = [
     "sport",
     "travel"
   ]
-
-const options = {
-  method: 'GET',
-  url: 'https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random',
-//  params: {category: 'science'},
-  headers: {
-    accept: 'application/json',
-    'X-RapidAPI-Key': '5814dd808fmsh325af6e3af961f7p18ed22jsn60b3de6b5df9',
-    'X-RapidAPI-Host': 'matchilling-chuck-norris-jokes-v1.p.rapidapi.com'
-  }
-};
-
-export function Home() {
+*/
+export function Home({ message = 'Herzlich willkommen!' }) {
     const [norris, setNorris] = useState({ value: "lade..." })
 
     const getChuck = async () => {
+        const options = {
+            method: 'GET',
+            url: 'https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random',
+            params: { category: 'explicit' },
+            headers: {
+                accept: 'application/json',
+                'X-RapidAPI-Key': '5814dd808fmsh325af6e3af961f7p18ed22jsn60b3de6b5df9',
+                'X-RapidAPI-Host': 'matchilling-chuck-norris-jokes-v1.p.rapidapi.com'
+            }
+        }
+
         const res = await axios.request(options)
 
         setNorris(res.data)
@@ -60,15 +63,22 @@ export function Home() {
         }
     }, [])
 
-    return (
-        <div className="Home-body">
-            <Paper elevation={5}>
-                <h2>Herzlich willkommen!</h2>
+    const handleChuck = () => {
+        // FIXME: reset interval when clicked
+        getChuck()
+    }
 
-                <Button fullWidth variant="text" size="small" color="primary" onClick={getChuck}>
+    return (
+        <Stack>
+            <Paper elevation={5}>
+                <Typography variant="h4" component="h2" align="center" gutterBottom>
+                    {message}
+                </Typography>
+
+                <Button variant="text" size="small" color="neutral" onClick={handleChuck}>
                     {norris.value}
                 </Button>
             </Paper>
-        </div>
+        </Stack>
     )
 } 

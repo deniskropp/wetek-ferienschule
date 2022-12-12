@@ -1,66 +1,58 @@
-import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useState } from 'react'
 
-import Container from '@mui/material/Container';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
+import { useMe } from '../Me'
+
+import Container from '@mui/material/Container'
+import Button from '@mui/material/Button'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
 
 
 export function Email() {
-    const { id } = useParams()
-    const [url, setURL] = useState('')
-    const [formValues, setFormValues] = useState({});
-    
-    const handleChange = (e) => {
-      const { name, value } = e.target;
+    const me = useMe()
+    const [status, setStatus] = useState(null)
+    const [formValues, setFormValues] = useState({})
 
-      setFormValues({
-        ...formValues,
-        [name]: value,
-      });
-    };
-  
-    if (id === undefined) {
-        const inputProps = {
-            step: 300,
-        };
+    const handleChange = (event) => {
+        const { name, value } = event.target
 
-        const handleSubmit = (event) => {
-            event.preventDefault();
-
-            console.log(formValues)
-
-            fetch(`https://ferienschule.violass.club:444/api/Email.php`,{
-                method: 'POST',
-                body: JSON.stringify(formValues)
-            })
-            .then((data) => data.json())
-            .then((data) => {
-                console.log(data)
-                setURL(data)
-            })
-        };
-          
-        return (
-            <Paper>
-                <Container>
-                    <form method="POST" onSubmit={handleSubmit}>
-                        <Stack>
-                            Hier kannst Du Deine E-mail Adresse angeben, um einen Zugang zu erhalten.
-                            <h3>Email</h3>
-                            <TextField name="email" inputProps={inputProps} onChange={handleChange} />
-                            <Button type={'submit'} color={'primary'}>E-Mail versenden</Button>
-                            {url.message}
-                        </Stack>
-                    </form>
-                </Container>
-            </Paper>
-        )
+        setFormValues({
+            ...formValues,
+            [name]: value,
+        })
     }
 
-    return <div className="container">
-            <code>{url}</code>
-        </div>
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+
+        const response = await me.requestCode(formValues.email)
+
+        setStatus(response)
+    }
+
+    return (
+        <Container sx={{p:5}}>
+            <Paper elevation={3}>
+                <form method="POST" onSubmit={handleSubmit}>
+                    {status ? (
+                        <Stack mx={2} mt={1}>
+                            <Typography variant="body1" component="h4" gutterBottom>
+                                {status.message}
+                            </Typography>
+                        </Stack>
+                    ) : (
+                        <Stack mx={2} mt={1}>
+                            <Typography variant="body1" component="h4" gutterBottom>
+                                Hier kannst Du Deine E-mail Adresse angeben, um Zugangsdaten zu erhalten.
+                            </Typography>
+                            <TextField name="email" onChange={handleChange} />
+                            <Button type={'submit'} color={'secondary'}>E-Mail versenden</Button>
+                        </Stack>
+                    )}
+                </form>
+            </Paper>
+        </Container>
+    )
 }

@@ -1,22 +1,25 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
-export function TeilnehmerView({id}) {
+import Container from '@mui/material/Container'
+
+
+export function TeilnehmerView({ id }) {
     const [teilnehmer, setTeilnehmer] = useState(null)
 
     useEffect(() => {
         fetch(`https://ferienschule.violass.club:444/api/Teilnehmer.php?id=${id}`)
-        .then((data) => data.json())
-        .then((json) => {
-            setTeilnehmer(json[0])
-        })
-    }, [setTeilnehmer,id])
+            .then((data) => data.json())
+            .then((json) => {
+                setTeilnehmer(json[0])
+            })
+    }, [setTeilnehmer, id])
 
     if (!teilnehmer)
-        return <div></div>
+        return <Container>Lade...</Container>
 
 
     return (
-        <div className="Teilnehmer">
+        <Container>
             <table>
                 <tr>
                     <th>Name</th>
@@ -35,6 +38,6 @@ export function TeilnehmerView({id}) {
                     <td>{teilnehmer.Email}</td>
                 </tr>
             </table>
-        </div>
+        </Container>
     )
 }

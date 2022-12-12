@@ -8,11 +8,7 @@ export function Teilnehmer() {
     const { id } = useParams()
 
     if (id !== undefined)
-        return <div className="container">
-                <TeilnehmerView id={id} />
-            </div>
+        return <TeilnehmerView id={id} />
 
-    return <div className="container">
-            <TeilnehmerListView2 />
-        </div>
+    return <TeilnehmerListView2 />
 }

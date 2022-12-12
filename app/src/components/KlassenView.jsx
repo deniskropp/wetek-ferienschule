@@ -1,32 +1,35 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 
-export function KlassenView({id}) {
-    const [klassen, setKlassen] = useState(null)
+import Container from '@mui/material/Container'
+
+
+export function KlassenView({ id }) {
+    const [klasse, setKlasse] = useState(null)
 
     useEffect(() => {
         fetch(`https://ferienschule.violass.club:444/api/Klassen.php?id=${id}`)
-        .then((data) => data.json())
-        .then((json) => {
-            setKlassen(json[0])
-        })
-    }, [setKlassen,id])
+            .then((data) => data.json())
+            .then((json) => {
+                setKlasse(json[0])
+            })
+    }, [setKlasse, id])
 
-    if (!klassen)
-        return <div></div>
+    if (!klasse)
+        return <Container>Lade...</Container>
 
 
     return (
-        <div className="Klassen">
+        <Container>
             <table>
                 <tr>
                     <th>Name</th>
-                    <td>{klassen.Name}</td>
+                    <td>{klasse.Name}</td>
                 </tr>
                 <tr>
                     <th>Schule</th>
-                    <td>{klassen.Schule}</td>
+                    <td>{klasse.Schule}</td>
                 </tr>
             </table>
-        </div>
+        </Container>
     )
 }
