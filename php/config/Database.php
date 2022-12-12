@@ -1,7 +1,8 @@
 <?php
 
 
-class Database {
+class Database
+{
 
     // Database Properties.
 
@@ -16,20 +17,11 @@ class Database {
 
     public function connect()
     {
-        try
-        {
-            $this->connection = new PDO('mysql:host='.$this->host.';dbname='.$this->db_name,
-                                    $this->username,
-                                    $this->password,
+        $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->db_name,
+            $this->username,
+            $this->password,
         );
-        }
-        catch(PDOException $e)
-        {
-            echo $e->getMessage();
-        }
 
         return $this->connection;
     }
-
-    
 }
