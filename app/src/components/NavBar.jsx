@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider'
 import Toolbar from '@mui/material/Toolbar'
 
 import EditIcon from '@mui/icons-material/Edit'
+import InstallMobileIcon from '@mui/icons-material/InstallMobile'
 
 
 export function NavBar({ isAdmin }) {
@@ -28,10 +29,10 @@ export function NavBar({ isAdmin }) {
                         </Button>
                     </Link>
                     <Divider orientation="vertical" variant="middle" />
-                    <Link to="/admin/Upload">
+                    <Link to="/admin/Setup">
                         <Button variant="contained" color="info">
-                            <EditIcon />
-                            Upload
+                            <InstallMobileIcon />
+                            Setup
                         </Button>
                     </Link>
                     <Divider orientation="vertical" variant="inset" />

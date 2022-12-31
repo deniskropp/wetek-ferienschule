@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useMe } from '../Me'
 
 const req = {
-    target: 'Teilnehmer.get',
+    target: 'Teilnehmer.me',
     data: {}
 }
 
@@ -13,7 +13,7 @@ export function Status() {
 
     useEffect(() => {
         async function update() {
-            const res = await me.postUser(req.target, req.data)
+            const res = await me.makeRequest('User', req)
 
             setDump(JSON.stringify(res, null, 4))
         }

@@ -1,15 +1,30 @@
+import { createContext, useContext } from 'react'
+import { useState, useEffect } from 'react'
+
 import axios from 'axios'
 
-class Me {
+import { Response } from './lib/Response'
+
+import { setup } from './setup'
+
+
+const Context = createContext()
+
+
+export const Provider = ({ children }) => {
+    const me = new Me(setup)
+
+    return (
+        <Context.Provider value={me}>
+            {children}
+        </Context.Provider>
+    )
+}
+
+export class Me {
     constructor({ api, token }) {
         this.api = api
         this.token = token ? token : localStorage.getItem('token')
-
-        //const axios_instance = axios.create({
-        //    baseURL: 'https://ferienschule.violass.club:444/api/',
-        //    timeout: 5000,
-        //    headers: { 'Authorization': `Bearer ${token}` }
-        //});
     }
 
     hasToken() {
@@ -22,91 +37,69 @@ class Me {
         return true
     }
 
-    async authenticate(code) {
-        const options = {
-            method: 'POST',
-            url: this.api.url + '/Authenticate.php',
-            headers: {
-                accept: 'application/json'
-            },
-            data: {
-                code: code
-            }
-        }
+    setToken(token) {
+        localStorage.setItem('token', token)
 
-        try {
-            const res = await axios.request(options)
-
-            localStorage.setItem('token', res.data.token)
-
-            this.token = res.data.token
-
-            return res.data
-        }
-        catch (err) {
-            console.log(err)
-
-            return { message: err, data: {} }
-        }
+        this.token = token
     }
 
-    async requestCode(email) {
-        const options = {
-            method: 'POST',
-            url: this.api.url + '/Email.php',
-            headers: {
-                accept: 'application/json'
-            },
-            data: {
-                email: email
-            }
-        }
+    delToken() {
+        localStorage.removeItem('token')
 
-        try {
-            const res = await axios.request(options)
-
-            return res.data
-        }
-        catch (err) {
-            console.log(err)
-
-            return { message: err, data: {} }
-        }
+        this.token = null
     }
 
-    async postUser(target, data) {
+    async isAdmin() {
+        if (!this.hasToken())
+            return false
+
+        const response = await this.makeRequest('User', {target: 'Me.isAdmin', data: {}})
+
+        if (!response.success())
+            return false
+
+        return response.data.isAdmin
+    }
+
+    async makeRequest(api, payload) {
         const options = {
             method: 'POST',
-            url: this.api.url + '/User.php',
+            url: this.api.url + '/' + api + '.php',
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${this.token}`
             },
-            data: {
-                target: target,
-                data: data
-            }
+            data: payload
         }
 
-        try {
-            const res = await axios.request(options)
+        const res = await axios.request(options)
 
-            console.log(res)
-
-            return res.data
-        }
-        catch (err) {
-            console.log(err)
-
-            return { message: err, data: {} }
-        }
+        return new Response(res.data)
     }
 }
 
 export function useMe() {
-    return new Me({
-        api: {
-            url: 'http://localhost:8080/api'
+    const me = useContext(Context)
+
+    return me
+}
+
+export function useTarget(api, payload) {
+    const me = useMe()
+    const [data, setData] = useState(null)
+
+    useEffect(() => {
+        async function load() {
+            const response = await me.makeRequest(api, payload)
+
+            if (response.success())
+                setData(response.data)
+            else
+                console.error(response.message)
         }
-    })
+
+        load()
+    }, [api, payload, me, setData])
+
+    return [me, data, setData]
 }

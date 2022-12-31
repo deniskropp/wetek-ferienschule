@@ -12,11 +12,17 @@ export function Authenticate({ redirectTo = '/' }) {
         throw new Error('no code')
     }
 
+    me.delToken()
+
     useEffect(() => {
         async function run() {
-            const status = await me.authenticate(code)
+            const res = await me.makeRequest('Authenticate', {code})
 
-            navigate(status.quo)
+            console.log(res)
+
+            me.setToken(res.data.token)
+
+            navigate(redirectTo)
         }
 
         run()

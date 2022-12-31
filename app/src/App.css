@@ -11,7 +11,7 @@
 
 
 .App-header {
-  min-height: 20vh;
+  min-height: 27vh;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -19,13 +19,14 @@
 }
 
 .App-body {
-  min-height: 70vh;
-  background-color: #eee;
+  padding: 0.2em 0.0em 0.0em 0.0em;
+  min-height: 66vh;
+  background: linear-gradient(#fff, #eee);
 }
 
 .App-footer {
   background-color: darkgray;
-  min-height: 10vh;
+  min-height: 5vh;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -42,16 +43,4 @@
   align-items: flex-start;
   justify-content: space-around;
   margin: 0.5em 1.0em 0.7em 1.0em;
-}
-
-th {
-  height: 1.7em;
-  text-align: left;
-  padding-right: 2em;
-}
-
-td {
-  height: 1.7em;
-  text-align: left;
-  margin: 0 10px 0 10px;
 }

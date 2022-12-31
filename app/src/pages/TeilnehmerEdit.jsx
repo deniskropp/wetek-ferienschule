@@ -1,10 +1,16 @@
 import { useParams } from 'react-router-dom'
 
+import Stack from '@mui/material/Stack'
+
 import { TeilnehmerEditView } from '../components/TeilnehmerEditView'
 
 
 export function TeilnehmerEdit() {
     const { id } = useParams()
 
-    return <TeilnehmerEditView id={id} />
+    return (
+        <Stack sx={{ padding: 1 }}>
+            <TeilnehmerEditView id={id} />
+        </Stack>
+    )
 }

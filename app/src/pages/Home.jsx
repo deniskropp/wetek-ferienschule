@@ -4,8 +4,6 @@ import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 
-import './Home.css'
-
 
 import axios from 'axios'
 
@@ -30,7 +28,7 @@ const categories = [
   ]
 */
 export function Home({ message = 'Herzlich willkommen!' }) {
-    const [norris, setNorris] = useState({ value: "lade..." })
+    const [norris, setNorris] = useState({ value: "..." })
 
     const getChuck = async () => {
         const options = {
@@ -69,8 +67,8 @@ export function Home({ message = 'Herzlich willkommen!' }) {
     }
 
     return (
-        <Stack>
-            <Paper elevation={5}>
+        <Stack sx={{ margin: '1px' }}>
+            <Paper elevation={2}>
                 <Typography variant="h4" component="h2" align="center" gutterBottom>
                     {message}
                 </Typography>

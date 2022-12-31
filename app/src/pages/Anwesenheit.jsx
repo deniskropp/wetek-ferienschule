@@ -1,18 +1,24 @@
-import React from 'react'
 import { Component, useState, useEffect } from 'react'
-
-import { useMe } from '../Me'
 
 import Button from '@mui/material/Button'
 import Container from '@mui/material/Container'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
+import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
+import Table from '@mui/material/Table'
+import TableBody from '@mui/material/TableBody'
+import TableCell from '@mui/material/TableCell'
+import TableContainer from '@mui/material/TableContainer'
+import TableRow from '@mui/material/TableRow'
 
 import QrReader from 'react-qr-scanner'
 
+import { TeilnehmerView } from '../components/TeilnehmerView'
 import { AnwesenheitListView } from '../components/AnwesenheitListView'
+
+import { useMe } from '../Me'
 
 
 class QrView extends Component {
@@ -56,24 +62,14 @@ class QrView extends Component {
 	}
 }
 
-function QrDialog(props) {
-	const { onClose, onResult, open } = props;
-
-	const handleClose = () => {
-		onClose();
-	};
-
-	const handleCancel = () => {
-		onClose();
-	};
-
+function QrDialog({ open, onExit, onResult }) {
 	return (
-		<Dialog onClose={handleClose} open={open}>
+		<Dialog onClose={onExit} open={open}>
 			<DialogTitle>QR-Code scannen</DialogTitle>
 			<DialogActions>
 				<Stack>
 					<QrView onResult={onResult} />
-					<Button autoFocus onClick={handleCancel}>Abbrechen</Button>
+					<Button autoFocus onClick={onExit}>Abbrechen</Button>
 				</Stack>
 			</DialogActions>
 		</Dialog>
@@ -81,66 +77,33 @@ function QrDialog(props) {
 }
 
 export function Anwesenheit() {
-	const me = useMe()
-	const [teilnehmer, setTeilnehmer] = useState(null)
-	const [open, setOpen] = React.useState(false)
+	const [open, setOpen] = useState(false)
 
-
-	useEffect(() => {
-		async function loadMe() {
-			const res = await me.postUser('Teilnehmer.get', {})
-
-			console.log(res)
-
-			setTeilnehmer(res.data)
-		}
-
-		loadMe()
-	}, [me])
-
-	if (!teilnehmer)
-		return <Container>Lade...</Container>
-
-
-	const handleClickQR = () => {
+	const handleQR = () => {
+		console.log('handleQR')
 		setOpen(true)
 	}
 
-	const handleClose = (value) => {
+	const handleExit = (value) => {
+		console.log('handleExit', value)
 		setOpen(false)
 	}
 
-	const handleQR = (data) => {
+	const handleResult = (data) => {
+		console.log('handleResult', data)
 		setOpen(false)
 	}
 
 	return (
-		<Container>
-			<Stack>
-				<div className="container">
-					<table>
-						<tr>
-							<th>Name</th>
-							<td>{teilnehmer.Name}</td>
-						</tr>
-						<tr>
-							<th>Vorname</th>
-							<td>{teilnehmer.Vorname}</td>
-						</tr>
-						<tr>
-							<th>Klasse</th>
-							<td>{teilnehmer.Klasse}</td>
-						</tr>
-					</table>
-				</div>
-				<QrDialog
-					open={open}
-					onResult={handleQR}
-					onClose={handleClose}
-				/>
-				<Button variant="contained" onClick={handleClickQR}>QR-Code scannen</Button>
-				{teilnehmer ? <AnwesenheitListView id={teilnehmer.id} /> : <div></div>}
-			</Stack>
-		</Container>
+		<Stack sx={{ padding: 1 }}>
+			<QrDialog
+				open={open}
+				onResult={handleResult}
+				onExit={handleExit}
+			/>
+			<TeilnehmerView />
+			<Button variant="contained" onClick={handleQR}>QR-Code scannen</Button>
+			<AnwesenheitListView />
+		</Stack>
 	)
 }

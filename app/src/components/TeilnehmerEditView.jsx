@@ -1,47 +1,55 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import Container from '@mui/material/Container'
 import TextField from '@mui/material/TextField'
 
+import { Loading } from './Loading'
+
+import { useTarget } from '../Me'
+
 
 export function TeilnehmerEditView({ id }) {
-    const [teilnehmer, setTeilnehmer] = useState(null)
-    const [formValues, setFormValues] = useState({})
-
-    useEffect(() => {
-        fetch(`https://ferienschule.violass.club:444/api/Teilnehmer.php?id=${id}`)
-            .then((data) => data.json())
-            .then((json) => {
-                setTeilnehmer(json[0])
-            })
-    }, [setTeilnehmer, id])
+    const navigate = useNavigate()
+    const [me, teilnehmer, setTeilnehmer] = useTarget('User', { target: 'Teilnehmer.get', data: { id } })
 
     if (!teilnehmer)
-        return <Container>Lade...</Container>
+        return <Loading />
 
 
     const handleChange = (event) => {
         const { name, value } = event.target
 
-        setFormValues({
-            ...formValues,
+        setTeilnehmer({
+            ...teilnehmer,
             [name]: value,
         })
-
-        setTeilnehmer({ ...teilnehmer, ...formValues })
     }
 
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        console.log(formValues, teilnehmer)
+        async function doUpdate() {
+            const res = await me.makeRequest('User', {target: 'Teilnehmer.put', data: teilnehmer})
+
+            if (res.message === '')
+                navigate(-1)
+        }
+
+        doUpdate()
+    }
+
+    const handleReset = (event) => {
+        event.preventDefault()
+
+        navigate(-1)
     }
 
     return (
         <Container>
-            <form method="POST" onSubmit={handleSubmit}>
+            <form method="POST" onSubmit={handleSubmit} onReset={handleReset}>
                 <table>
                     <tr>
                         <th>Name</th>
@@ -63,7 +71,7 @@ export function TeilnehmerEditView({ id }) {
                 <div className="container">
                     <ButtonGroup>
                         <Button type="submit" variant="contained" color="primary">OK</Button>
-                        <Button type="cancel" variant="contained" color="secondary">Abbrechen</Button>
+                        <Button type="reset" variant="contained" color="secondary">Abbrechen</Button>
                     </ButtonGroup>
                 </div>
             </form>
