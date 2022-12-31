@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS `Codes`;
 CREATE TABLE `Codes` (
   `Code` varchar(20) NOT NULL,
   `Teilnehmer_id` int NOT NULL,
+  `admin` bool,
   `dateModified` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP()),
   PRIMARY KEY (`Code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin;
@@ -45,12 +46,12 @@ CREATE TABLE `Teilnehmer` (
   `id` int NOT NULL AUTO_INCREMENT,
   `Name` text NOT NULL,
   `Vorname` text NOT NULL,
-  `Klasse` text NOT NULL,
+  `Klassen_id` int NOT NULL,
   `Email` text NOT NULL,
   `dateModified` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP()),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin;
-INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klasse`,`Email`,`dateModified`) VALUES (1,'Kropp','Denis','36a','denis.o.kropp@gmail.com','2022-12-07 17:10:39');
-INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klasse`,`Email`,`dateModified`) VALUES (2,'Müller','Viola','9c','violamueller@gmail.com','2022-12-07 17:10:39');
-INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klasse`,`Email`,`dateModified`) VALUES (3,'Schmidt','Jens','10a','schmidtj@gmail.com','2022-12-07 17:10:39');
-INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klasse`,`Email`,`dateModified`) VALUES (4,'Scholz','Olaf','1a','olaf.scholz@bundestag.com','2022-12-07 17:10:39');
+INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klassen_id`,`Email`,`dateModified`) VALUES (1,'Kropp','Denis',1,'denis.o.kropp@gmail.com','2022-12-07 17:10:39');
+INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klassen_id`,`Email`,`dateModified`) VALUES (2,'Müller','Viola',1,'violamueller@gmail.com','2022-12-07 17:10:39');
+INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klassen_id`,`Email`,`dateModified`) VALUES (3,'Schmidt','Jens',1,'schmidtj@gmail.com','2022-12-07 17:10:39');
+INSERT INTO `Teilnehmer` (`id`,`Name`,`Vorname`,`Klassen_id`,`Email`,`dateModified`) VALUES (4,'Scholz','Olaf',1,'olaf.scholz@bundestag.com','2022-12-07 17:10:39');
