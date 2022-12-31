@@ -1,55 +1,60 @@
 <?php 
-    header("Access-Control-Allow-Methods: POST");
 
-	include '../default.php';
-	include '../secrets.php';
+include_once '../default.php';
+include_once '../secrets.php';
 
-    include_once('../config/Database.php');
-    include_once('../lib/Response.php');
+include_once '../config/Auth.php';
+include_once '../config/Database.php';
 
-	use \Firebase\JWT\JWT;
+include_once '../lib/Response.php';
 
-	function lookupCode($code) {
-		$db = new Database();
-		$connection = $db->connect();
-
-		$q = $connection->prepare('SELECT Teilnehmer_id FROM Codes WHERE Code = ?');
-
-		$q->bindValue(1, $code, PDO::PARAM_STR);
-
-		if (!$q->execute())
-			throw new Error( 'query execute failed' );
-
-		$obj = $q->fetch(PDO::FETCH_OBJ);
-
-		return $obj->Teilnehmer_id;
-	}
+use \Firebase\JWT\JWT;
 
 
+$res = new Response();
 
-    $res = new Response();
+try {
+    $auth = new Auth(null);
 
-    try {
-		$data = file_get_contents( 'php://input' );
-		$body = json_decode( $data );
-		if ($body && isset($body->code)) {
-			$id = lookupCode($body->code);
+    $body = json_decode(file_get_contents('php://input'));
+    if ($body) {
+        if (isset($body->code)) {
+            $code = lookupCode($body->code);
 
-			$token = array(
-				"Teilnehmer_id" => $id,
-				"admin" => $id == 0 ? true : false,
-			);
-
-			$jwt = JWT::encode($token, Secrets::$jwt_key, 'HS256');
+            $jwt = $auth->makeToken($code->Teilnehmer_id, $code->admin);
 
             $res->setData('token', $jwt);
-		}
-		else {
-            $res->setError('invalid code');
-		}
-	}
-    catch (Exception $e) {
-        $res->setError($e->getMessage());
+        }
+        else {
+            $res->setError('no code');
+        }
     }
+    else {
+        $res->setError('invalid body');
+    }
+}
+catch (Exception $e) {
+    $res->setError('Exception: ' . $e->getMessage());
+}
 
-    echo $res->toString();
+$res->finish();
+
+
+//--------------------------------------------------------------------------------
+
+/**
+ * @throws Exception
+ */
+function lookupCode($code) {
+    $db = new Database();
+
+    $q = $db->exec('SELECT Teilnehmer_id FROM Codes WHERE Code = ?',
+        array($code),
+        array(PDO::PARAM_STR));
+
+    $obj = $q->fetch(PDO::FETCH_OBJ);
+    if (!$obj)
+        throw new Error('could not find code');
+
+    return $obj;
+}

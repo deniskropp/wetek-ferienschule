@@ -1,119 +1,99 @@
 <?php
 
+include_once '../default.php';
+
+include_once '../config/Database.php';
+
+include_once '../lib/Response.php';
+include_once '../lib/Util.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 
-use Firebase\JWT\JWT;
-use Firebase\JWT\Key;
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+$res = new Response();
 
-include '../default.php';
-header('Access-Control-Allow-Methods: POST');
+try {
+    $body = json_decode(file_get_contents('php://input'));
+    if ($body) {
+        $email = $body->email;
 
-include_once('../config/Database.php');
+        if (isset($email)) {
+            $db = new Database();
 
-function generateRandomString($length = 25)
-{
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
+            $query = $db->exec('SELECT * FROM Teilnehmer WHERE Email = ?',
+                               array($email),
+                               array(PDO::PARAM_STR));
+
+            $obj = $query->fetch(PDO::FETCH_OBJ);
+            if ($obj) {
+                $code = make_code($db, $obj->id);
+
+                // Set mailer to use SMTP
+                // Specify main and backup SMTP servers
+                // Enable SMTP authentication
+                // SMTP username
+                // SMTP password
+                // Enable TLS encryption, `ssl` also accepted
+                // TCP port to connect to
+                $mail = new PHPMailer;
+
+                $mail->setFrom('meister@ferienschule.violass.club', 'Ferienschule');
+
+                $mail->isSMTP();
+                $mail->Host = 'smtp.ionos.de';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'meister@ferienschule.violass.club';
+                $mail->Password = 'schule2022!';
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+
+                // Add a recipient
+                $mail->addAddress($email, 'User');
+
+                $mail->Subject = 'Zugang: Login URL (bitte im Browser eingeben)';
+                $mail->Body    =
+                $mail->AltBody = make_body($code);
+
+                if (!$mail->send()) {
+                    $res->setError('E-Mail konnte nicht versendet werden.' . ' Mailer Error: ' . $mail->ErrorInfo);
+                }
+                else {
+                    $res->setError('Eine E-Mail wurde versendet.');
+                }
+            }
+            else {
+                $res->setError('Mit dieser E-Mail Adresse konnte kein Teilnehmer gefunden werden.');
+            }
+        }
+        else {
+            $res->setError('Keine E-Mail Adresse angegeben!');
+        }
     }
-    return $randomString;
+    else {
+        $res->setError('invalid body');
+    }
+}
+catch (Exception $e) {
+    $res->setError('Exception: ' . $e->getMessage());
 }
 
-function make_code($connection, $user)
+$res->finish();
+
+
+//--------------------------------------------------------------------------------
+
+function make_code($db, $id): string
 {
     $code = generateRandomString(20);
 
-    try {
-        $query = $connection->prepare('INSERT INTO Codes (Code, Teilnehmer_id) VALUES (?, ?)');
-
-        $query->bindValue(1, $code, PDO::PARAM_STR);
-        $query->bindValue(2, $user->id, PDO::PARAM_INT);
-
-        if (!$query->execute())
-            throw new Error('query execute failed');
-    }
-    catch (PDOException $e) {
-        throw new Error($e->getMessage());
-    }
+    $query = $db->exec('INSERT INTO Codes (Code, Teilnehmer_id) VALUES (?, ?)',
+        array($code, $id),
+        array(PDO::PARAM_STR, PDO::PARAM_INT));
 
     return $code;
 }
 
-function make_body($code)
+function make_body($code): string
 {
-    return 'https://ferienschule.violass.club/' . $code;
+    return 'https://ferienschule.violass.club/authenticate/' . $code;
 }
-
-if (isset($_GET['email']))
-    $email = $_GET['email'];
-else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = file_get_contents('php://input');
-    $body = json_decode($data);
-    if ($body && isset($body->email))
-        $email = $body->email;
-}
-
-if (isset($email)) {
-    //objects
-    $db = new Database();
-
-    $connection = $db->connect();
-
-    $sql = 'SELECT * FROM Teilnehmer WHERE Email = ?';
-
-    $query = $connection->prepare($sql);
-
-    $query->bindValue(1, $email, PDO::PARAM_STR);
-
-    if (!$query->execute())
-        throw new Error('query execute failed');
-
-    $obj = $query->fetch(PDO::FETCH_OBJ);
-    if (!$obj)
-        $msg = 'Mit dieser E-Mail Adresse konnte kein Teilnehmer gefunden werden.';
-    else if ($email == $obj->Email) {
-        $mail = new PHPMailer;
-
-        $code = make_code($connection, $obj);
-
-        $email = 'kropp@wetek.de';
-
-        $mail->isSMTP();
-        // Set mailer to use SMTP
-        $mail->Host = 'smtp.ionos.de';
-        // Specify main and backup SMTP servers
-        $mail->SMTPAuth = true;
-        // Enable SMTP authentication
-        $mail->Username = 'meister@ferienschule.violass.club';
-        // SMTP username
-        $mail->Password = 'schule2022!';
-        // SMTP password
-        $mail->SMTPSecure = 'tls';
-        // Enable TLS encryption, `ssl` also accepted
-        $mail->Port = 587;
-        // TCP port to connect to
-
-        $mail->setFrom('meister@ferienschule.violass.club', 'Ferienschule');
-        $mail->addAddress($email, 'User');
-        // Add a recipient
-
-        $mail->Subject = 'Please follow the link';
-        $mail->Body    =
-            $mail->AltBody = make_body($code);
-
-        if (!$mail->send()) {
-            $msg = 'E-Mail konnte nicht versendet werden.' . ' Mailer Error: ' . $mail->ErrorInfo;
-        } else {
-            $msg = 'Eine E-Mail wurde versendet.';
-        }
-    }
-} else {
-    $msg = 'Keine E-Mail Adresse angegeben!';
-}
-
-echo '{"message":"' . $msg . '"}';

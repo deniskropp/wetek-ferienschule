@@ -6,22 +6,32 @@ class Database
 
     // Database Properties.
 
-    private $host = 'localhost:3334';
+    private $host = 'localhost:4401';
     private $db_name = 'db';
     private $username = 'root';
     private $password = '';
     private $connection = null;
 
 
-    // Function for making connection to database.
-
-    public function connect()
+    /**
+     * @throws Exception
+     */
+    public function exec($sql, $values, $types)
     {
-        $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->db_name,
-            $this->username,
-            $this->password,
-        );
+        if ($this->connection === null)
+            $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->db_name,
+                $this->username,
+                $this->password,
+            );
 
-        return $this->connection;
+        $q = $this->connection->prepare($sql);
+
+        for ($i = 0; $i < count($values); $i++)
+            $q->bindValue($i + 1, $values[$i], $types[$i]);
+
+        if (!$q->execute())
+            throw new Exception( 'query execute failed (' . $sql . ')' );
+
+        return $q;
     }
 }

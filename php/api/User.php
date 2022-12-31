@@ -1,42 +1,36 @@
 <?php 
-    header("Access-Control-Allow-Methods: POST");
 
-	include_once '../default.php';
+include_once '../default.php';
 
-    include_once('../config/Auth.php');
-    include_once('../config/Targets.php');
-    include_once('../lib/Response.php');
+include_once '../config/Auth.php';
+include_once '../config/Targets.php';
 
-    $res = new Response();
+include_once '../lib/Response.php';
 
-    try {
-        $auth = new Auth();
 
-        if ($auth->getId() != null) {
-            $targets = new Targets($auth);
+$res = new Response();
 
-            $data = file_get_contents( 'php://input' );
-            $body = json_decode( $data );
-            if ($body && isset($body->target)) {
-                $target = $targets->get($body->target, $body->data);
-    
-                if (isset($target)) {
-                    $target->request($body->data, $res);
-                }
-                else {
-                    $res->setError('invalid target');
-                }
-            }
-            else {
-                $res->setError('invalid body');
-            }
+try {
+    $auth = new Auth(apache_request_headers());
+
+    $body = json_decode( file_get_contents( 'php://input' ) );
+    if ($body) {
+        $targets = new Targets($auth);
+
+        $target = $targets->get($body);
+        if ($target) {
+            $target->request($res);
         }
         else {
-            $res->setError('invalid auth');
+            $res->setError('invalid target (' . $body->target . ')');
         }
     }
-    catch (Exception $e) {
-        $res->setError($e->getMessage());
+    else {
+        $res->setError('invalid body');
     }
+}
+catch (Exception $e) {
+    $res->setError('Exception: ' . $e->getMessage());
+}
 
-    echo $res->toString();
+$res->finish();

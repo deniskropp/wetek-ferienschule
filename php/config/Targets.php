@@ -1,82 +1,170 @@
 <?php
 
-    include_once('../lib/Response.php');
-    include_once('../lib/Target.php');
+include_once '../config/Auth.php';
+include_once '../config/Database.php';
 
-    class Targets {
-        private $auth;
+include_once '../lib/Response.php';
+include_once '../lib/Target.php';
 
-        public function __construct($auth)
-        {
-            $this->auth = $auth;
-        }
+class Targets
+{
+    private $auth;
 
-        public function get($target, $data)
-        {
-            if ($this->auth->getId() > 0) {
-                if ($target == 'Teilnehmer.get')
-                    return new TargetDBGet('SELECT * FROM Teilnehmer WHERE id = ?',
-                                            array($this->auth->getId()),
-                                            array(PDO::PARAM_STR));
-
-                if ($target == 'Anwesenheit.get')
-                    return new TargetDBGetMulti('SELECT * FROM Anwesenheit WHERE Teilnehmer_id = ?',
-                                                array($this->auth->getId()),
-                                                array(PDO::PARAM_STR));
-
-                if ($target == 'Klassen.get')
-                    return new TargetDBGetMulti('SELECT * FROM Klassen WHERE id = ?',
-                                                array($data->id),
-                                                array(PDO::PARAM_INT));
-
-                return null;
-            }
-        }
-    }
-
-    include_once('../config/Database.php');
-
-    class TargetDBGet implements Target
+    /**
+     * @throws Exception
+     */
+    public function __construct($auth)
     {
-        private $db;
-        private $connection;
-        protected $query;
+        if ($auth->getId() == null)
+            throw new Exception('invalid auth');
 
-        public function __construct($sql, $values, $types)
-        {
-            $this->db = new Database();
-
-            $this->connection = $this->db->connect();
-            
-            $this->query = $this->connection->prepare($sql);
-
-            for ($i = 0; $i < count($values); $i++) {
-                $this->query->bindValue($i+1, $values[$i], $types[$i]);
-            }
-        }
-
-        public function request($data, $response)
-        {
-            if (!$this->query->execute())
-                throw new Error( 'query execute failed' );
-    
-            $obj = $this->query->fetch(PDO::FETCH_ASSOC);
-    
-            foreach ($obj as $key => $value) {
-                $response->setData($key, $value);
-            }
-        }
+        $this->auth = $auth;
     }
 
-    class TargetDBGetMulti extends TargetDBGet
+    public function get($body)
     {
-        public function request($data, $response)
-        {
-            if (!$this->query->execute())
-                throw new Error( 'query execute failed' );
-    
-            $obj = $this->query->fetchAll(PDO::FETCH_OBJ);
+        $target = $body->target;
+        $data = $body->data;
 
-            $response->setArray($obj);
+        if ($target == 'Me.isAdmin')
+            return new TargetMe('isAdmin', $this->auth->isAdmin());
+
+        if ($target == 'Teilnehmer.me')
+            return new TargetDBGet(
+                'SELECT * FROM Teilnehmer WHERE id = ?',
+                array($this->auth->getId()),
+                array(PDO::PARAM_STR)
+            );
+
+        if ($target == 'Anwesenheit.me')
+            return new TargetDBGetMulti(
+                'SELECT * FROM Anwesenheit WHERE Teilnehmer_id = ?',
+                array($this->auth->getId()),
+                array(PDO::PARAM_STR)
+            );
+
+        if ($this->auth->isAdmin()) {
+            if ($target == 'Teilnehmer.all') {
+                $sql = 'SELECT Teilnehmer.Name, Teilnehmer.Vorname, ' .
+                              'Teilnehmer.Klassen_id, Teilnehmer.Email, ' .
+                              'Teilnehmer.id, Klassen.Name AS Klasse FROM Teilnehmer ' .
+                              'LEFT JOIN Klassen ON Teilnehmer.Klassen_id = Klassen.id ' .
+                              'ORDER BY Teilnehmer.Name';
+                return new TargetDBGetMulti($sql, array(), array());
+            }
+
+           if ($target == 'Teilnehmer.delete')
+                return new TargetDBDelete(
+                    'DELETE FROM Teilnehmer WHERE id = ?',
+                    array($data->id),
+                    array(PDO::PARAM_INT)
+                );
+
+            if ($target == 'Teilnehmer.get')
+                return new TargetDBGet(
+                    'SELECT * FROM Teilnehmer WHERE id = ?',
+                    array($data->id),
+                    array(PDO::PARAM_INT)
+                );
+
+            if ($target == 'Teilnehmer.put')
+                return new TargetDBPut(
+                    'UPDATE Teilnehmer SET Name = ?, Vorname = ?, Klassen_id = ?, Email = ? WHERE id = ?',
+                    array($data->Name, $data->Vorname, $data->Klassen_id, $data->Email, $data->id),
+                    array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR, PDO::PARAM_INT)
+                );
+
+
+            if ($target == 'Klassen.all')
+                return new TargetDBGetMulti(
+                    'SELECT * FROM Klassen ORDER BY Name', array(), array()
+                );
+
+            if ($target == 'Klassen.delete')
+                return new TargetDBDelete(
+                    'DELETE FROM Klassen WHERE id = ?',
+                    array($data->id),
+                    array(PDO::PARAM_INT)
+                );
+
+            if ($target == 'Klassen.get')
+                return new TargetDBGet(
+                    'SELECT * FROM Klassen WHERE id = ?',
+                    array($data->id),
+                    array(PDO::PARAM_INT)
+                );
+        }
+
+        return false;
+    }
+}
+
+
+class TargetMe implements Target
+{
+    private $key;
+    private $value;
+
+    public function __construct($key, $value)
+    {
+        $this->key = $key;
+        $this->value = $value;
+    }
+
+    public function request($response)
+    {
+        $response->setData($this->key, $this->value);
+    }
+}
+
+
+class TargetDBGet implements Target
+{
+    private $db;
+    protected $query;
+
+    /**
+     * @throws Exception
+     */
+    public function __construct($sql, $values, $types)
+    {
+        $this->db = new Database();
+        $this->query = $this->db->exec($sql, $values, $types);
+    }
+
+    public function request($response)
+    {
+        $obj = $this->query->fetch(PDO::FETCH_ASSOC);
+
+        foreach ($obj as $key => $value) {
+            $response->setData($key, $value);
         }
     }
+}
+
+class TargetDBGetMulti extends TargetDBGet
+{
+    public function request($response)
+    {
+        $obj = $this->query->fetchAll(PDO::FETCH_OBJ);
+
+        $response->setArray($obj);
+    }
+}
+
+class TargetDBDelete extends TargetDBGet
+{
+    public function request($response)
+    {
+    }
+}
+
+class TargetDBPut extends TargetDBGet
+{
+    public function request($response)
+    {
+        $obj = $this->query->fetchAll(PDO::FETCH_OBJ);
+
+        $response->setArray($obj);
+    }
+}
