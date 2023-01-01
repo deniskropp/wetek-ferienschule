@@ -1,24 +1,15 @@
-import { Component, useState, useEffect } from 'react'
+import { Component, useState } from 'react'
 
 import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
-import Paper from '@mui/material/Paper'
 import Stack from '@mui/material/Stack'
-import Table from '@mui/material/Table'
-import TableBody from '@mui/material/TableBody'
-import TableCell from '@mui/material/TableCell'
-import TableContainer from '@mui/material/TableContainer'
-import TableRow from '@mui/material/TableRow'
 
 import QrReader from 'react-qr-scanner'
 
 import { TeilnehmerView } from '../components/TeilnehmerView'
 import { AnwesenheitListView } from '../components/AnwesenheitListView'
-
-import { useMe } from '../Me'
 
 
 class QrView extends Component {

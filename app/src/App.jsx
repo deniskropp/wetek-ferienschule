@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { createBrowserRouter, Outlet, useLocation } from 'react-router-dom'
+import { createBrowserRouter, Outlet } from 'react-router-dom'
 import { Navigate, RouterProvider } from 'react-router-dom'
 
 import Box from '@mui/material/Box'
@@ -17,6 +17,7 @@ import { TeilnehmerEdit } from './pages/TeilnehmerEdit'
 import { Email } from './pages/Email'
 import { Anwesenheit } from './pages/Anwesenheit'
 import { Authenticate } from './pages/Authenticate'
+import { Setup } from './pages/Setup'
 import { Status } from './pages/Status'
 
 import { NavBar } from './components/NavBar'
@@ -135,6 +136,7 @@ export const Routes = [
       { path: 'Teilnehmer', element: <Teilnehmer /> },
       { path: 'Teilnehmer/:id', element: <Teilnehmer /> },
       { path: 'Teilnehmer/:id/Edit', element: <TeilnehmerEdit /> },
+      { path: 'Setup', element: <Setup /> },
     ]
   },
   {
