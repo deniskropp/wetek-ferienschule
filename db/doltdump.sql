@@ -20,8 +20,6 @@ CREATE TABLE `Codes` (
   `dateModified` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP()),
   PRIMARY KEY (`Code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin;
-INSERT INTO `Codes` (`Code`,`Teilnehmer_id`,`dateModified`) VALUES ('COI60bV1VZK3E7COidEt',1,'2022-12-07 18:48:40');
-INSERT INTO `Codes` (`Code`,`Teilnehmer_id`,`dateModified`) VALUES ('x3tZRE4Bb5DPhXVEY9qO',1,'2022-12-07 18:47:15');
 DROP TABLE IF EXISTS `Klassen`;
 CREATE TABLE `Klassen` (
   `id` int NOT NULL AUTO_INCREMENT,
