@@ -26,7 +26,7 @@ try {
 
             $obj = $query->fetch(PDO::FETCH_OBJ);
             if ($obj) {
-                $code = make_code($db, $obj->id);
+                $code = make_code($db, $obj->id, false);
 
                 // Set mailer to use SMTP
                 // Specify main and backup SMTP servers
@@ -82,18 +82,18 @@ $res->finish();
 
 //--------------------------------------------------------------------------------
 
-function make_code($db, $id): string
+function make_code($db, $id, $admin): string
 {
     $code = generateRandomString(20);
 
-    $query = $db->exec('INSERT INTO Codes (Code, Teilnehmer_id) VALUES (?, ?)',
-        array($code, $id),
-        array(PDO::PARAM_STR, PDO::PARAM_INT));
+    $db->exec('INSERT INTO Codes (Code, Teilnehmer_id, admin) VALUES (?, ?, ?)',
+        array($code, $id, $admin),
+        array(PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_BOOL));
 
     return $code;
 }
 
 function make_body($code): string
 {
-    return 'https://ferienschule.violass.club/authenticate/' . $code;
+    return $_SERVER['HTTP_REFERER'] . 'authenticate/' . $code;
 }

@@ -7,7 +7,7 @@ class Response
     private $data;
 
     public function __construct() {
-        $this->status = 200;
+        $this->status = 'OK';
         $this->message = '';
         $this->data = [];
     }
@@ -21,7 +21,7 @@ class Response
     }
 
     public function setError($msg) {
-        $this->status = 403;
+        $this->status = 'ERROR';
         $this->message = $msg;
     }
 

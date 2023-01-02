@@ -93,6 +93,13 @@ class Targets
                     array($data->id),
                     array(PDO::PARAM_INT)
                 );
+
+            if ($target == 'Klassen.put')
+                return new TargetDBPut(
+                    'UPDATE Klassen SET Name = ?, Schule = ? WHERE id = ?',
+                    array($data->Name, $data->Schule, $data->id),
+                    array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT)
+                );
         }
 
         return false;

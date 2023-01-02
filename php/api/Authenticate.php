@@ -48,7 +48,7 @@ $res->finish();
 function lookupCode($code) {
     $db = new Database();
 
-    $q = $db->exec('SELECT Teilnehmer_id FROM Codes WHERE Code = ?',
+    $q = $db->exec('SELECT Teilnehmer_id, admin FROM Codes WHERE Code = ?',
         array($code),
         array(PDO::PARAM_STR));
 
