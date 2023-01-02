@@ -6,7 +6,7 @@ import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableRow from '@mui/material/TableRow'
 
-export function ItemView({ object, fields }) {
+export function ItemView({ item, fields }) {
     return (
         <Container sx={{ padding: 1 }}>
             <TableContainer component={Paper}>
@@ -18,7 +18,7 @@ export function ItemView({ object, fields }) {
                                     {field}
                                 </TableCell>
                                 <TableCell>
-                                    {object[field]}
+                                    {item[field]}
                                 </TableCell>
                             </TableRow>
                         ))}

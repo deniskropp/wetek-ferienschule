@@ -12,6 +12,7 @@ import { Provider as MeProvider, useMe } from './Me'
 
 import { Home } from './pages/Home'
 import { Klassen } from './pages/Klassen'
+import { KlassenEdit } from './pages/KlassenEdit'
 import { Teilnehmer } from './pages/Teilnehmer'
 import { TeilnehmerEdit } from './pages/TeilnehmerEdit'
 import { Email } from './pages/Email'
@@ -133,6 +134,7 @@ export const Routes = [
     path: '/admin', element: <Main isAdmin={true} />, children: [
       { path: 'Klassen', element: <Klassen /> },
       { path: 'Klassen/:id', element: <Klassen /> },
+      { path: 'Klassen/:id/Edit', element: <KlassenEdit /> },
       { path: 'Teilnehmer', element: <Teilnehmer /> },
       { path: 'Teilnehmer/:id', element: <Teilnehmer /> },
       { path: 'Teilnehmer/:id/Edit', element: <TeilnehmerEdit /> },

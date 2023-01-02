@@ -13,6 +13,6 @@ export function TeilnehmerView({ id }) {
         return <Loading />
 
     return (
-        <ItemView object={teilnehmer} fields={['Name', 'Vorname', 'Klasse', 'Email']} />
+        <ItemView item={teilnehmer} fields={['Name', 'Vorname', 'Klasse', 'Email']} />
     )
 }

@@ -6,6 +6,6 @@ export class Response {
     }
 
     success() {
-        return this.status >= 200 && this.status < 300
+        return this.status === 'OK'
     }
 }
