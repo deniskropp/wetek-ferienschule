@@ -29,6 +29,13 @@ export function NavBar({ isAdmin }) {
                         </Button>
                     </Link>
                     <Divider orientation="vertical" variant="middle" />
+                    <Link to="/admin/QR">
+                        <Button variant="contained" color="info">
+                            <InstallMobileIcon />
+                            QR
+                        </Button>
+                    </Link>
+                    <Divider orientation="vertical" variant="middle" />
                     <Link to="/admin/Setup">
                         <Button variant="contained" color="info">
                             <InstallMobileIcon />

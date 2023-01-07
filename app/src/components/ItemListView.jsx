@@ -63,7 +63,7 @@ function SimpleDialog(props) {
 }
 
 export function ItemListView({ itemName, itemFields }) {
-    const [me, items, setItems] = useTarget('User', { target: `${itemName}.all` })
+    const [me, items, setItems] = useTarget('User', { target: `${itemName}.all`, data: {} })
 
     const [open, setOpen] = useState(false)
     const [row, setRow] = useState(null)
@@ -77,9 +77,9 @@ export function ItemListView({ itemName, itemFields }) {
         setOpen(false)
 
         async function doDelete(id) {
-            const res = await me.postUser(`${itemName}.delete`, { id })
+            const res = await me.makeRequest('User', { target: `${itemName}.delete`, data: { id } })
 
-            if (res.message === '')
+            if (res.success())
                 setItems(items.filter((e) => e.id !== id))
         }
 

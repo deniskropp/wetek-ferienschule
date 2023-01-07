@@ -1,0 +1,8 @@
+{
+  "name": "ferienschule-db",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "dolt sql-server -P 4401"
+  }
+}

@@ -1,1 +1,1 @@
-(echo -n 'INSERT INTO Teilnehmer '; node ../testing/random-user.jsx) | dolt sql
+(echo -n 'INSERT INTO Teilnehmer '; node ./random-user.jsx) | dolt sql

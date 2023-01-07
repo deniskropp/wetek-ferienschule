@@ -1,0 +1,8 @@
+{
+  "name": "ferienschule-php",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "php -S 0.0.0.0:4402 -t ."
+  }
+}

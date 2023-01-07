@@ -67,6 +67,13 @@ class Targets
                     array(PDO::PARAM_INT)
                 );
 
+            if ($target == 'Teilnehmer.post') {
+                $sql = 'INSERT INTO Teilnehmer (Name, Vorname, Klassen_id, Email) VALUES (?, ?, ?, ?)';
+                return new TargetDBGetMulti($sql,
+                    array($data->Name, $data->Vorname, $data->Klassen_id, $data->Email),
+                    array(PDO::PARAM_STR, PDO::PARAM_STR, PDO::PARAM_INT, PDO::PARAM_STR));
+            }
+
             if ($target == 'Teilnehmer.put')
                 return new TargetDBPut(
                     'UPDATE Teilnehmer SET Name = ?, Vorname = ?, Klassen_id = ?, Email = ? WHERE id = ?',
@@ -93,6 +100,13 @@ class Targets
                     array($data->id),
                     array(PDO::PARAM_INT)
                 );
+
+            if ($target == 'Klassen.post') {
+                $sql = 'INSERT INTO Klassen (Name, Schule) VALUES (?, ?)';
+                return new TargetDBGetMulti($sql,
+                    array($data->Name, $data->Schule),
+                    array(PDO::PARAM_STR, PDO::PARAM_STR));
+            }
 
             if ($target == 'Klassen.put')
                 return new TargetDBPut(
