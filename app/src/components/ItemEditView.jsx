@@ -37,7 +37,10 @@ export function ItemEditView({ id, itemName, itemFields }) {
         event.preventDefault()
 
         async function doUpdate() {
-            const response = await me.makeRequest('User', { target: `${itemName}.put`, data: item })
+            const response = await me.makeRequest('User', {
+                target: `${itemName}.put`,
+                data: item
+            })
 
             if (response.success())
                 navigate(-1)
