@@ -2,16 +2,12 @@ SET FOREIGN_KEY_CHECKS=0;
 SET UNIQUE_CHECKS=0;
 DROP TABLE IF EXISTS `Anwesenheit`;
 CREATE TABLE `Anwesenheit` (
-  `Teilnehmer_id` int NOT NULL,
-  `Klassen_id` int NOT NULL,
   `Datum` timestamp NOT NULL,
+  `Teilnehmer_id` int NOT NULL,
   `dateModified` timestamp NOT NULL DEFAULT (CURRENT_TIMESTAMP()),
-  PRIMARY KEY (`Teilnehmer_id`,`Klassen_id`,`Datum`)
+  PRIMARY KEY (`Datum`,`Teilnehmer_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin;
-INSERT INTO `Anwesenheit` (`Teilnehmer_id`,`Klassen_id`,`Datum`,`dateModified`) VALUES (1,0,'2022-11-11 09:11:06','2022-12-07 17:10:39');
-INSERT INTO `Anwesenheit` (`Teilnehmer_id`,`Klassen_id`,`Datum`,`dateModified`) VALUES (1,0,'2022-11-12 10:13:20','2022-12-07 17:10:39');
-INSERT INTO `Anwesenheit` (`Teilnehmer_id`,`Klassen_id`,`Datum`,`dateModified`) VALUES (1,0,'2022-11-13 08:34:10','2022-12-07 17:10:39');
-INSERT INTO `Anwesenheit` (`Teilnehmer_id`,`Klassen_id`,`Datum`,`dateModified`) VALUES (1,0,'2022-11-14 07:27:33','2022-12-07 17:10:39');
+INSERT INTO `Anwesenheit` (`Datum`,`Teilnehmer_id`) VALUES ('2022-11-11',1);
 DROP TABLE IF EXISTS `Codes`;
 CREATE TABLE `Codes` (
   `Code` varchar(20) NOT NULL,
