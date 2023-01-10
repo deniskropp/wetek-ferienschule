@@ -10,21 +10,14 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableRow from '@mui/material/TableRow'
-import TextField from '@mui/material/TextField'
-
-import { Loading } from './Loading'
 
 import { useMe } from '../Me'
 
 
-export function ItemNeuView({ itemName, itemFields }) {
+export function ItemNeuView({ kind }) {
     const navigate = useNavigate()
     const me = useMe()
     const [item, setItem] = useState({})
-
-//    if (!item)
-//        return <Loading />
-
 
     const handleChange = (event) => {
         const { name, value } = event.target
@@ -39,7 +32,10 @@ export function ItemNeuView({ itemName, itemFields }) {
         event.preventDefault()
 
         async function doUpdate() {
-            const response = await me.makeRequest('User', { target: `${itemName}.post`, data: item })
+            const response = await me.makeRequest('User', {
+                target: `${kind.name}.post`,
+                data: item
+            })
 
             if (response.success())
                 navigate(-1)
@@ -60,13 +56,13 @@ export function ItemNeuView({ itemName, itemFields }) {
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 450 }} size="small">
                         <TableBody>
-                            {itemFields.map((field, index) => (
+                            {kind.fields.map((field, index) => (
                                 <TableRow key={index}>
                                     <TableCell>
-                                        {field}
+                                        {field.label ? field.label : field.name}
                                     </TableCell>
                                     <TableCell>
-                                        <TextField variant="standard" name={field} value={item[field]} onChange={handleChange} />
+                                        {field.element(field, item, handleChange)}
                                     </TableCell>
                                 </TableRow>
                             ))}

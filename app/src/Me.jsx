@@ -1,5 +1,5 @@
-import { createContext, useContext } from 'react'
-import { useState, useEffect } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import axios from 'axios'
 
@@ -12,7 +12,12 @@ const Context = createContext()
 
 
 export const Provider = ({ children }) => {
-    const me = new Me(setup)
+    const mysetup = {...setup}
+
+    if (process.env.API_URL)
+        mysetup.api_url = process.env.API_URL
+
+    const me = new Me(mysetup)
 
     return (
         <Context.Provider value={me}>
@@ -53,28 +58,40 @@ export class Me {
         if (!this.hasToken())
             return false
 
-        const response = await this.makeRequest('User', {target: 'Me.isAdmin', data: {}})
+        const response = await this.makeRequest('User', { target: 'Me.isAdmin' })
 
-        if (!response.success())
-            return false
+        if (response.success())
+            return response.data.isAdmin
 
-        return response.data.isAdmin
+        return null
     }
 
     async makeRequest(api, payload) {
+        const auth = this.hasToken() ? { Authorization: `Bearer ${this.token}` } : {}
+
         const options = {
             method: 'POST',
             url: this.api.url + '/' + api + '.php',
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${this.token}`
+                ...auth
             },
             data: payload
         }
 
         const res = await axios.request(options)
 
-        return new Response(res.data)
+
+        const response = new Response(res.data)
+
+        if (response.success())
+            console.log(`me.makeRequest(${api})`, options, response)
+        else
+            console.error(`me.makeRequest(${api}) failed!`, options, response, res)
+
+        console.log(response.logs())
+
+        return response
     }
 }
 
@@ -86,6 +103,7 @@ export function useMe() {
 
 export function useTarget(api, payload) {
     const me = useMe()
+    const navigate = useNavigate()
     const [data, setData] = useState(null)
 
     useEffect(() => {
@@ -95,11 +113,11 @@ export function useTarget(api, payload) {
             if (response.success())
                 setData(response.data)
             else
-                console.error(response.message)
+                navigate(`error/${encodeURIComponent(response.message)}`)
         }
 
         load()
-    }, [api, payload, me, setData])
+    }, [me, navigate, setData])
 
     return [me, data, setData]
 }

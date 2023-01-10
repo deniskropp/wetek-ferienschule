@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
+import { Loading } from '../components/Loading'
+
 import { useMe } from '../Me'
 
 export function Authenticate({ redirectTo = '/' }) {
@@ -8,25 +10,24 @@ export function Authenticate({ redirectTo = '/' }) {
     const me = useMe()
     const navigate = useNavigate()
 
-    if (code === undefined) {
+    if (!code)
         throw new Error('no code')
-    }
-
-    me.delToken()
 
     useEffect(() => {
-        async function run() {
-            const res = await me.makeRequest('Authenticate', {code})
+        async function auth() {
+            const response = await me.makeRequest('Authenticate', { code })
 
-            console.log(res)
+            if (response.success()) {
+                me.setToken(response.data.token)
 
-            me.setToken(res.data.token)
-
-            navigate(redirectTo)
+                navigate(redirectTo)
+            }
         }
 
-        run()
+        me.delToken()
+
+        auth()
     })
 
-    return <div />
+    return <Loading />
 }

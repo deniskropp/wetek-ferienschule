@@ -1,4 +1,5 @@
 import { Component, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -32,6 +33,8 @@ class QrView extends Component {
 		})
 		if (data)
 			this.onResult(data)
+//		else
+//			this.onResult({text: '2023-01-08'})
 	}
 	handleError(err) {
 		console.error(err)
@@ -62,7 +65,7 @@ function QrDialog({ open, onExit, onResult }) {
 			<DialogTitle>QR-Code scannen</DialogTitle>
 			<DialogActions>
 				<Stack>
-					<QrView onResult={onResult} facingMode="environment" />
+					{open && <QrView onResult={onResult} facingMode="environment" />}
 					<Button autoFocus onClick={onExit}>Abbrechen</Button>
 				</Stack>
 			</DialogActions>
@@ -72,6 +75,7 @@ function QrDialog({ open, onExit, onResult }) {
 
 export function Anwesenheit() {
 	const me = useMe()
+	const navigate = useNavigate()
 	const [open, setOpen] = useState(false)
 	const [message, setMessage] = useState('x')
 
@@ -89,20 +93,20 @@ export function Anwesenheit() {
 		console.log('handleResult', data)
 		setOpen(false)
 
-		async function post() {
+		async function post(data) {
+			setMessage(data.text)
+
 			const response = await me.makeRequest('User', { target: 'Anwesenheit.post', data: { Datum: data.text } })
 
-			if (!response.sucess())
-				setMessage(response.message)
-			else
-				setMessage(data.text)
+			if (response.success())
+				navigate(0)
 		}
 		
-		post()
+		post(data)
 	}
 
 	return (
-		<Stack sx={{ padding: 1 }}>
+		<Stack sx={{ padding: 0 }}>
 			<QrDialog
 				open={open}
 				onResult={handleResult}

@@ -1,8 +1,10 @@
 import { ItemEditView } from './ItemEditView'
 
+import { Klassen } from '../kinds/Klassen'
+
 
 export function KlassenEditView({ id }) {
     return (
-        <ItemEditView id={id} itemName="Klassen" itemFields={['Name', 'Schule']} />
+        <ItemEditView id={id} kind={Klassen.kind()} />
     )
 }

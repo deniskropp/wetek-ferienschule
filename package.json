@@ -1,5 +1,13 @@
 {
-  "dependencies": {
-    "react-qr-code": "^2.0.11"
+  "name": "ferienschule",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "run-app": "cd app && npm start",
+    "build-app": "cd app && npm run build",
+    "make-dev": "cp -a app/build/* php/* dist-base/.htaccess dist-dev/",
+    "make-prod": "cp -a app/build/* php/* dist-base/.htaccess dist-prod/",
+    "all-dev": "npm run build-app && npm run make-dev",
+    "all-prod": "npm run build-app && npm run make-prod"
   }
 }

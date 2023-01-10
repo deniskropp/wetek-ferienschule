@@ -25,9 +25,10 @@ export function Email() {
     const handleSubmit = async (event) => {
         event.preventDefault()
 
-        const response = await me.makeRequest('Email', {email: formValues.email})
+        const response = await me.makeRequest('Email', { email: formValues.email })
 
-        setStatus(response)
+//        if (response.success())
+            setStatus(response.message)
     }
 
     return (
@@ -35,7 +36,7 @@ export function Email() {
             {status ? (
                 <Stack sx={{ margin: 1, padding: 1 }}>
                     <Typography variant="body1" component="h4" gutterBottom>
-                        {status.message}
+                        {status}
                     </Typography>
                 </Stack>
             ) : (

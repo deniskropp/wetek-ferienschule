@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Outlet, useParams } from 'react-router-dom'
 
 import Stack from '@mui/material/Stack'
 
@@ -10,7 +10,8 @@ export function Klassen() {
     const { id } = useParams()
 
     return (
-        <Stack sx={{ padding: 1 }}>
+        <Stack sx={{ padding: 0 }}>
+            <Outlet />
             {(id !== undefined) ? <KlassenView id={id} /> : <ItemListView itemName="Klassen" itemFields={['Name', 'Schule']} />}
         </Stack>
     )

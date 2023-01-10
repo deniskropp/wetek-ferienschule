@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import dayjs from 'dayjs'
+
 import Stack from '@mui/material/Stack'
 import TextField from '@mui/material/TextField'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
@@ -18,7 +19,7 @@ export function QR() {
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Stack sx={{ padding: 1, alignItems: 'center' }} spacing={1}>
+            <Stack sx={{ padding: 3, alignItems: 'center' }} spacing={5}>
                 <MobileDatePicker
                     label="Bitte das Datum einstellen"
                     inputFormat="YYYY-MM-DD"
@@ -28,7 +29,7 @@ export function QR() {
                 />
                 <QRCode
                     size={256}
-                    style={{ height: "300", maxWidth: "100%", width: "50%" }}
+                    style={{ height: "600", maxWidth: "100%", width: "50%" }}
                     value={value.toISOString()}
                     viewBox={`0 0 256 256`}
                 />

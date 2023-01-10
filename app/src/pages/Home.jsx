@@ -34,7 +34,7 @@ export function Home({ message = 'Herzlich willkommen!' }) {
         const options = {
             method: 'GET',
             url: 'https://matchilling-chuck-norris-jokes-v1.p.rapidapi.com/jokes/random',
-            params: { category: 'explicit' },
+            params: { category: 'dev' },
             headers: {
                 accept: 'application/json',
                 'X-RapidAPI-Key': '5814dd808fmsh325af6e3af961f7p18ed22jsn60b3de6b5df9',

@@ -21,7 +21,7 @@
 .App-body {
   padding: 0.2em 0.0em 0.0em 0.0em;
   min-height: 66vh;
-  background: linear-gradient(#fff, #eee);
+  background: linear-gradient(#ececec, #cbcbcb);
 }
 
 .App-footer {
@@ -43,4 +43,10 @@
   align-items: flex-start;
   justify-content: space-around;
   margin: 0.5em 1.0em 0.7em 1.0em;
+}
+
+
+.btn-footer {
+  background-color: inherit;
+  border: none;
 }

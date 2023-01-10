@@ -10,7 +10,7 @@ export function Teilnehmer() {
     const { id } = useParams()
 
     return (
-        <Stack sx={{ padding: 1 }}>
+        <Stack sx={{ padding: 0 }}>
             {(id !== undefined) ? <TeilnehmerView id={id} /> : <ItemListView itemName="Teilnehmer" itemFields={['Name', 'Vorname', 'Klasse', 'Email']} />}
         </Stack>
     )

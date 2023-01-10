@@ -1,5 +1,6 @@
 export const setup = {
     api: {
-        url: "http://localhost:4402/api"
+        url: "http://localhost/api"
+        //url: "https://ferienschule.violass.club/api"
     }
 }

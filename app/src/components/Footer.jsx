@@ -1,11 +1,33 @@
+import { useState } from 'react'
+
+import Box from '@mui/material/Box'
+import Container from "@mui/material/Container"
 import Stack from "@mui/material/Stack"
+import Toolbar from '@mui/material/Toolbar'
+
+import ExpandLessIcon from '@mui/icons-material/ExpandLess'
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
+
 
 export function Footer() {
+    const [detail, setDetail] = useState(false)
+
     return (
-        <Stack direction="column">
-            <div className="container">Copyright © 2022 WeTeK Berlin gGmbH</div>
-            <WetekFooter />
-        </Stack>
+        <Box>
+            <Stack>
+                <Toolbar>
+                    <button className="container btn-footer" onClick={() => setDetail(!detail)}>
+                        Copyright © 2023 WeTeK Berlin gGmbH
+                    </button>
+                    <button className="container btn-footer" onClick={() => setDetail(!detail)}>
+                        {detail ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </button>
+                </Toolbar>
+            </Stack>
+            <Container>
+                {detail && <WetekFooter />}
+            </Container>
+        </Box>
     )
 }
 

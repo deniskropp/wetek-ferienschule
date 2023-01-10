@@ -5,14 +5,15 @@ import { useTarget } from '../Me'
 
 
 export function KlassenView({ id }) {
-    const [me, klasse] = useTarget('User', (id !== undefined) ?
-        { target: 'Klassen.get', data: { id } } :
-        { target: 'Klassen.me', data: {} })
+    const [me, klasse] = useTarget('User', id ? {
+        target: 'Klassen.get',
+        data: { id }
+    } : { target: 'Klassen.me' })
 
     if (!klasse)
         return <Loading />
 
     return (
-        <ItemView object={klasse} fields={['Name', 'Schule']} />
+        <ItemView item={klasse} fields={['Name', 'Schule']} />
     )
 }

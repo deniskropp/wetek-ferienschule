@@ -14,9 +14,10 @@ import { useTarget } from '../Me'
 
 
 export function AnwesenheitListView({ id }) {
-	const [me, anwesenheit] = useTarget('User', (id !== undefined) ?
-		{ target: 'Anwesenheit.get', data: { id } } :
-		{ target: 'Anwesenheit.me', data: {} })
+	const [me, anwesenheit] = useTarget('User', id ? {
+		target: 'Anwesenheit.get',
+		data: { id }
+	} : { target: 'Anwesenheit.me' })
 
 	if (!anwesenheit)
 		return <Loading />

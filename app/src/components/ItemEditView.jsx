@@ -9,16 +9,18 @@ import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
 import TableContainer from '@mui/material/TableContainer'
 import TableRow from '@mui/material/TableRow'
-import TextField from '@mui/material/TextField'
 
 import { Loading } from './Loading'
 
 import { useTarget } from '../Me'
 
 
-export function ItemEditView({ id, itemName, itemFields }) {
+export function ItemEditView({ id, kind }) {
     const navigate = useNavigate()
-    const [me, item, setItem] = useTarget('User', { target: `${itemName}.get`, data: { id } })
+    const [me, item, setItem] = useTarget('User', {
+        target: `${kind.name}.get`,
+        data: { id }
+    })
 
     if (!item)
         return <Loading />
@@ -38,7 +40,7 @@ export function ItemEditView({ id, itemName, itemFields }) {
 
         async function doUpdate() {
             const response = await me.makeRequest('User', {
-                target: `${itemName}.put`,
+                target: `${kind.name}.put`,
                 data: item
             })
 
@@ -61,13 +63,13 @@ export function ItemEditView({ id, itemName, itemFields }) {
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 450 }} size="small">
                         <TableBody>
-                            {itemFields.map((field, index) => (
+                            {kind.fields.map((field, index) => (
                                 <TableRow key={index}>
                                     <TableCell>
-                                        {field}
+                                        {field.label ? field.label : field.name}
                                     </TableCell>
                                     <TableCell>
-                                        <TextField variant="standard" name={field} value={item[field]} onChange={handleChange} />
+                                        {field.element(field, item, handleChange)}
                                     </TableCell>
                                 </TableRow>
                             ))}

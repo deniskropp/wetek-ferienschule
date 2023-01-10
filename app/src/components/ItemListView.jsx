@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom'
 
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
-import Container from '@mui/material/Container'
 import Dialog from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
 import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
 import TableCell from '@mui/material/TableCell'
@@ -63,7 +63,7 @@ function SimpleDialog(props) {
 }
 
 export function ItemListView({ itemName, itemFields }) {
-    const [me, items, setItems] = useTarget('User', { target: `${itemName}.all`, data: {} })
+    const [me, items, setItems] = useTarget('User', { target: `${itemName}.all` })
 
     const [open, setOpen] = useState(false)
     const [row, setRow] = useState(null)
@@ -77,7 +77,10 @@ export function ItemListView({ itemName, itemFields }) {
         setOpen(false)
 
         async function doDelete(id) {
-            const res = await me.makeRequest('User', { target: `${itemName}.delete`, data: { id } })
+            const res = await me.makeRequest('User', {
+                target: `${itemName}.delete`,
+                data: { id }
+            })
 
             if (res.success())
                 setItems(items.filter((e) => e.id !== id))
@@ -91,7 +94,7 @@ export function ItemListView({ itemName, itemFields }) {
         return <Loading />
 
     return (
-        <Container sx={{ padding: 1 }}>
+        <Stack sx={{ padding: 0 }}>
             <SimpleDialog
                 open={open}
                 row={row}
@@ -123,8 +126,8 @@ export function ItemListView({ itemName, itemFields }) {
                 <Table sx={{ minWidth: 450 }} size="small">
                     <TableHead>
                         <TableRow>
-                            {itemFields.map((field, index) => <TableCell>{field}</TableCell>)}
-                            <TableCell>...</TableCell>
+                            {itemFields.map((field, index) => <TableCell key={index}>{field}</TableCell>)}
+                            <TableCell key='other'>...</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -133,8 +136,12 @@ export function ItemListView({ itemName, itemFields }) {
                                 key={row.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                {itemFields.map((field, index) => <TableCell><Link to={row.id}>{row[field]}</Link></TableCell>)}
-                                <TableCell>
+                                {itemFields.map((field, index) => (
+                                    <TableCell key={index}>
+                                        <Link to={linkTo(row.id)}>{row[field]}</Link>
+                                    </TableCell>
+                                ))}
+                                <TableCell key='other'>
                                     <ButtonGroup>
                                         <Button size="small" color="primary" href={linkTo(row.id, "Edit")}><EditIcon /></Button>
                                         <Button size="small" color="neutral" onClick={() => handleClickOpen(row)}><DeleteIcon /></Button>
@@ -146,6 +153,6 @@ export function ItemListView({ itemName, itemFields }) {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </Container>
+        </Stack>
     )
 }

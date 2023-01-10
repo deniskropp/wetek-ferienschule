@@ -9,7 +9,7 @@ export function TeilnehmerEdit() {
     const { id } = useParams()
 
     return (
-        <Stack sx={{ padding: 1 }}>
+        <Stack sx={{ padding: 0 }}>
             <TeilnehmerEditView id={id} />
         </Stack>
     )
