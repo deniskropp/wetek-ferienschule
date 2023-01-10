@@ -1,20 +1,17 @@
 <?php 
 
 include_once '../default.php';
-include_once '../secrets.php';
 
 include_once '../config/Auth.php';
 include_once '../config/Database.php';
 
 include_once '../lib/Response.php';
 
-use \Firebase\JWT\JWT;
 
-
-$res = new Response();
+$GLOBALS['res'] = $res = new Response();
 
 try {
-    $auth = new Auth(null);
+    $auth = new Auth();
 
     $body = json_decode(file_get_contents('php://input'));
     if ($body) {
@@ -26,15 +23,15 @@ try {
             $res->setData('token', $jwt);
         }
         else {
-            $res->setError('no code');
+            $res->setError('Authenticate: no code');
         }
     }
     else {
-        $res->setError('invalid body');
+        $res->setError('Authenticate: invalid body');
     }
 }
 catch (Exception $e) {
-    $res->setError('Exception: ' . $e->getMessage());
+    $res->setError($e->getMessage());
 }
 
 $res->finish();

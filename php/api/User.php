@@ -8,7 +8,10 @@ include_once '../config/Targets.php';
 include_once '../lib/Response.php';
 
 
-$res = new Response();
+$GLOBALS['res'] = $res = new Response();
+
+$res->log('======================== User.php =============================');
+//$res->log('=== ' . print_r($_SERVER, true) . '===');
 
 try {
     $auth = new Auth(apache_request_headers());
@@ -18,19 +21,21 @@ try {
         $targets = new Targets($auth);
 
         $target = $targets->get($body);
+        $res->log('  $target(' . print_r($target, true) . ')');
+
         if ($target) {
             $target->request($res);
         }
         else {
-            $res->setError('invalid target (' . $body->target . ')');
+            $res->setError('User: invalid target (' . $body->target . ')');
         }
     }
     else {
-        $res->setError('invalid body');
+        $res->setError('User: invalid body');
     }
 }
 catch (Exception $e) {
-    $res->setError('Exception: ' . $e->getMessage());
+    $res->setError($e->getMessage());
 }
 
 $res->finish();

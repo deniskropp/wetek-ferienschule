@@ -3,6 +3,7 @@
 include_once '../default.php';
 
 include_once '../config/Database.php';
+include_once '../config/Setup.php';
 
 include_once '../lib/Response.php';
 include_once '../lib/Util.php';
@@ -10,23 +11,17 @@ include_once '../lib/Util.php';
 use PHPMailer\PHPMailer\PHPMailer;
 
 
-$res = new Response();
+$GLOBALS['res'] = $res = new Response();
 
 try {
     $body = json_decode(file_get_contents('php://input'));
     if ($body) {
-        $email = $body->email;
-
-        if (isset($email)) {
+        if (isset($body->email)) {
             $db = new Database();
 
-            $query = $db->exec('SELECT * FROM Teilnehmer WHERE Email = ?',
-                               array($email),
-                               array(PDO::PARAM_STR));
-
-            $obj = $query->fetch(PDO::FETCH_OBJ);
-            if ($obj) {
-                $code = make_code($db, $obj->id, false);
+            $user = find_user($db, $body->email);
+            if ($user) {
+                $code = make_code($db, $user['id'], $user['admin']);
 
                 // Set mailer to use SMTP
                 // Specify main and backup SMTP servers
@@ -37,28 +32,28 @@ try {
                 // TCP port to connect to
                 $mail = new PHPMailer;
 
-                $mail->setFrom('meister@ferienschule.violass.club', 'Ferienschule');
+                $mail->setFrom(Setup::$email['from'], Setup::$email['name']);
 
                 $mail->isSMTP();
-                $mail->Host = 'smtp.ionos.de';
+                $mail->Host = Setup::$smtp['host'];
                 $mail->SMTPAuth = true;
-                $mail->Username = 'meister@ferienschule.violass.club';
-                $mail->Password = 'schule2022!';
+                $mail->Username = Setup::$smtp['user'];
+                $mail->Password = Setup::$smtp['pass'];
                 $mail->SMTPSecure = 'tls';
                 $mail->Port = 587;
 
                 // Add a recipient
-                $mail->addAddress($email, 'User');
+                $mail->addAddress($user['email'], $user['name']);
 
-                $mail->Subject = 'Zugang: Login URL (bitte im Browser eingeben)';
+                $mail->Subject = 'Link zur Aktivierung';
                 $mail->Body    =
                 $mail->AltBody = make_body($code);
 
                 if (!$mail->send()) {
-                    $res->setError('E-Mail konnte nicht versendet werden.' . ' Mailer Error: ' . $mail->ErrorInfo);
+                    $res->setError('E-Mail konnte nicht versendet werden (' . $mail->ErrorInfo . ')');
                 }
                 else {
-                    $res->setError('Eine E-Mail wurde versendet.');
+                    $res->setMessage('Eine E-Mail wurde an Sie versendet. Sehen Sie eventuell auch im Junk Folder nach!');
                 }
             }
             else {
@@ -70,11 +65,11 @@ try {
         }
     }
     else {
-        $res->setError('invalid body');
+        $res->setError('Email: invalid body');
     }
 }
 catch (Exception $e) {
-    $res->setError('Exception: ' . $e->getMessage());
+    $res->setError($e->getMessage());
 }
 
 $res->finish();
@@ -95,5 +90,39 @@ function make_code($db, $id, $admin): string
 
 function make_body($code): string
 {
-    return $_SERVER['HTTP_REFERER'] . 'authenticate/' . $code;
+    return str_replace('/email', '/', $_SERVER['HTTP_REFERER'])
+        . 'authenticate/' . $code
+        . ' (bitte im Browser eingeben)';
+}
+
+function find_user($db, $email)
+{
+    foreach (Setup::$admins as $admin) {
+        if ($admin['email'] == $email) {
+            return [
+                'id' => 0,
+                'admin' => true,
+                'name' => $admin['name'],
+                'email' => $admin['email']
+            ];
+        }
+    }
+
+    $query = $db->exec(
+        'SELECT id, Name, Vorname, Email FROM Teilnehmer WHERE Email = ?',
+        array($email),
+        array(PDO::PARAM_STR)
+    );
+
+    $obj = $query->fetch(PDO::FETCH_OBJ);
+    if ($obj) {
+        return [
+            'id' => $obj->id,
+            'admin' => false,
+            'name' => $obj->Vorname . ' ' . $obj->Name,
+            'email' => $obj->Email
+        ];
+    }
+
+    return null;
 }

@@ -1,28 +1,25 @@
 <?php
 
+include_once 'Setup.php';
+
 
 class Database
 {
-
-    // Database Properties.
-
-    private $host = 'localhost:4401';
-    private $db_name = 'db';
-    private $username = 'root';
-    private $password = '';
     private $connection = null;
-
 
     /**
      * @throws Exception
      */
     public function exec($sql, $values, $types)
     {
-        if ($this->connection === null)
-            $this->connection = new PDO('mysql:host=' . $this->host . ';dbname=' . $this->db_name,
-                $this->username,
-                $this->password,
+        if ($this->connection === null) {
+            $this->connection = new PDO('mysql:' .
+                                        'host=' . Setup::$mysql['host'] . ';' .
+                                        'dbname=' . Setup::$mysql['db'],
+                                        Setup::$mysql['user'],
+                                        Setup::$mysql['pass']
             );
+        }
 
         $q = $this->connection->prepare($sql);
 
