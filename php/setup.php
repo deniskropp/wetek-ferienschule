@@ -3,8 +3,9 @@
 
 class Setup {
     public static $site = [
-        'base' => 'http://localhost:3000'
+        //'base' => 'http://localhost:3000'
         //'base' => 'https://ferienschule.violass.club'
+        'base' => 'https://ferienschule.wetek.de'
     ];
 
     public static $admins = [

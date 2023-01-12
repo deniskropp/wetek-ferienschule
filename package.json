@@ -5,8 +5,8 @@
   "scripts": {
     "run-app": "cd app && npm start",
     "build-app": "cd app && npm run build",
-    "make-dev": "cp -a app/build/* php/* dist-base/.htaccess dist-dev/",
-    "make-prod": "cp -a app/build/* php/* dist-base/.htaccess dist-prod/",
+    "make-dev": "sh ./scripts/make-dev.sh",
+    "make-prod": "sh ./scripts/make-prod.sh",
     "all-dev": "npm run build-app && npm run make-dev",
     "all-prod": "npm run build-app && npm run make-prod"
   }
