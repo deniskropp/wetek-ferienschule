@@ -44,7 +44,7 @@
             ), Auth::$jwt_key, 'HS256');
         }
 
-        public function getId(): int | null
+        public function getId()
         {
             return $this->id;
         }
