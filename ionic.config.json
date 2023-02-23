@@ -1,0 +1,7 @@
+{
+  "name": "ferienschule",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

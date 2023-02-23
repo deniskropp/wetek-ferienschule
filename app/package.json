@@ -4,6 +4,12 @@
   "private": true,
   "dependencies": {
     "@capacitor/android": "^4.7.0",
+    "@capacitor/app": "4.1.1",
+    "@capacitor/cli": "4.7.0",
+    "@capacitor/core": "4.7.0",
+    "@capacitor/haptics": "4.1.0",
+    "@capacitor/keyboard": "4.1.1",
+    "@capacitor/status-bar": "4.1.1",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/roboto": "^4.5.8",
@@ -50,5 +56,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "cordova-res": "0.15.4"
   }
 }

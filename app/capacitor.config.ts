@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'de.wetek',
-  appName: 'ferienschule-app',
+  appName: 'Ferienschule',
   webDir: 'build',
   bundledWebRuntime: false
 };
